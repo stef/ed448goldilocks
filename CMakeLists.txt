@@ -10,10 +10,20 @@ project(DECAF VERSION 0.9.4 LANGUAGES C CXX)
 
 set(DECAF_SO_VERSION "0")
 
+find_package( PythonInterp 2.7 REQUIRED )
+
 option(ENABLE_SHARED "Build shared library." ON)
 option(ENABLE_STATIC "Build static library." ON)
 option(ENABLE_STRICT "Build with strict compile options." YES)
 option(ENABLE_TESTS  "Enable compilation of tests." YES)
+option(GENERATED_SOURCE_PATH "Where the generated source code is stored, default in the building tree" OFF)
+
+if (GENERATED_SOURCE_PATH)
+	set(GSOURCE_PATH ${GENERATED_SOURCE_PATH})
+else()
+	set(GSOURCE_PATH ${PROJECT_BINARY_DIR}/src/GENERATED)
+endif()
+message("Generated source code in ${GSOURCE_PATH}")
 
 if(NOT CPACK_GENERATOR AND NOT CMAKE_INSTALL_RPATH AND CMAKE_INSTALL_PREFIX)
 	set(CMAKE_INSTALL_RPATH ${CMAKE_INSTALL_FULL_LIBDIR})
@@ -25,7 +35,7 @@ include(CheckSymbolExists)
 include(CMakePushCheckState)
 
 include_directories(
-	src/GENERATED/include/
+	${GSOURCE_PATH}/include/
 	src/include/
 	src/
 	${CMAKE_CURRENT_BINARY_DIR}

@@ -58,20 +58,23 @@ include_directories(
 set(DECAF_SOURCE_FILES_CXX
 )
 
-add_subdirectory(GENERATED/c/p25519)
-add_subdirectory(GENERATED/c/p448)
-add_subdirectory(GENERATED/c/curve25519)
-add_subdirectory(GENERATED/c/ed448goldilocks)
+add_subdirectory(curve25519)
+add_subdirectory(ed448goldilocks)
+add_subdirectory(p25519)
+add_subdirectory(p448)
 
+add_subdirectory(generator)
 
 if(ENABLE_STATIC)
 	add_library(decaf-static STATIC ${DECAF_HEADER_FILES} ${DECAF_SOURCE_FILES_C} ${DECAF_SOURCE_FILES_CXX} $<TARGET_OBJECTS:p25519> $<TARGET_OBJECTS:p448> $<TARGET_OBJECTS:CURVE25519> $<TARGET_OBJECTS:CURVE448>)
+	add_dependencies(decaf-static generatedCode)
 	set_target_properties(decaf-static PROPERTIES OUTPUT_NAME decaf)
 	target_include_directories(decaf-static PUBLIC)
 	target_link_libraries(decaf-static INTERFACE)
 endif()
 if(ENABLE_SHARED)
 	add_library(decaf SHARED ${DECAF_HEADER_FILES} ${DECAF_SOURCE_FILES_C} ${DECAF_SOURCE_FILES_CXX} $<TARGET_OBJECTS:p25519> $<TARGET_OBJECTS:p448> $<TARGET_OBJECTS:CURVE25519> $<TARGET_OBJECTS:CURVE448>)
+	add_dependencies(decaf generatedCode)
 	if(APPLE)
 		set_target_properties(decaf PROPERTIES LINK_FLAGS "-stdlib=libc++")
 	endif()
@@ -105,7 +108,7 @@ if(ENABLE_SHARED)
 	)
 endif()
 
-install(DIRECTORY GENERATED/include/
+install(DIRECTORY ${GSOURCE_PATH}/include/
 	DESTINATION include/decaf
 	FILES_MATCHING PATTERN "*.h*"
 	PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
