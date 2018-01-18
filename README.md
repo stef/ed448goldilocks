@@ -95,6 +95,21 @@ of the distinguishing rules.  See the paper for more details.
 As of v0.9.4, libdecaf uses the "Ristretto" variant of this encoding.
 See https://www.ristretto.group for details, once that site is up.
 
+## Build and Install
+
+ cmake -DCMAKE_INSTALL_PREFIX=<Install path> <path to root directory>
+ make
+ make test
+ make install
+
+Most C source code is generated through a python script during the build.
+Some files holding tables are generated in one more step building an
+executable to generate them. They are thus stored in the source tree to help
+cross-compilation. The build script update them when their dependencies
+are modified, to build only these files:
+
+ make decaf_tables
+
 ## Licensing
 
 Most of the source files here are by Mike Hamburg.  Those files are (c)

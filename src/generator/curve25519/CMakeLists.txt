@@ -75,16 +75,12 @@ add_custom_command(
     COMMENT "Generating code for include/decaf/ed255.hxx"
 )
 
-#python -B src/generator/template.py --per=curve --item=curve25519 --guard=decaf/point_255.hxx -o src/GENERATED/include/decaf/point_255.hxx src/per_curve/point.tmpl.hxx
-#python -B src/generator/template.py --per=curve --item=curve25519 --guard=decaf/ed255.hxx -o src/GENERATED/include/decaf/ed255.hxx src/per_curve/eddsa.tmpl.hxx
-
-			
 add_custom_target(generatorCurve25519 DEPENDS
+			generatorP25519
        			${GSOURCE_PATH}/c/curve25519/scalar.c
        			${GSOURCE_PATH}/c/curve25519/decaf.c
        			${GSOURCE_PATH}/c/curve25519/elligator.c
        			${GSOURCE_PATH}/c/curve25519/eddsa.c
-       			${GSOURCE_PATH}/c/curve25519/decaf_tables.c
 			${GSOURCE_PATH}/include/decaf/point_255.hxx
 			${GSOURCE_PATH}/include/decaf/ed255.hxx
 			)
@@ -94,15 +90,14 @@ include_directories(
 	${PROJECT_SOURCE_DIR}/src/p25519/${TARGET_ARCH_DIR_P25519}
 )
 
-add_executable(decaf_gen_tables_curve25519 ${GSOURCE_PATH}/c/curve25519/decaf_gen_tables.c
+add_executable(decaf_gen_tables_curve25519 EXCLUDE_FROM_ALL ${GSOURCE_PATH}/c/curve25519/decaf_gen_tables.c
        			${GSOURCE_PATH}/c/curve25519/decaf.c
 			${GSOURCE_PATH}/c/curve25519/scalar.c
 			${PROJECT_SOURCE_DIR}/src/utils.c
 			$<TARGET_OBJECTS:p25519>)
 
-add_custom_command(
-	COMMAND decaf_gen_tables_curve25519 > ${GSOURCE_PATH}/c/curve25519/decaf_tables.c
+add_custom_target(decaf_tables_curve25519
+	COMMAND decaf_gen_tables_curve25519 > ${PROJECT_SOURCE_DIR}/src/curve25519/decaf_tables.c
 	DEPENDS decaf_gen_tables_curve25519
-	OUTPUT ${GSOURCE_PATH}/c/curve25519/decaf_tables.c
 	COMMENT "Generating code for curve25519/decaf_tables.c"
 )

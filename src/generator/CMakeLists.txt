@@ -153,6 +153,11 @@ add_custom_target(generatorCommonCode DEPENDS
 add_subdirectory(curve25519)
 add_subdirectory(ed448goldilocks)
 
+add_custom_target(decaf_tables DEPENDS
+	decaf_tables_curve25519
+	decaf_tables_ed448goldilocks
+	)
+
 add_custom_target(generatedCode DEPENDS 
 	generatorCommonCode
 	generatorEd448goldilocks
