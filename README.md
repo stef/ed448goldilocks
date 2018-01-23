@@ -110,6 +110,11 @@ are modified, to build only these files:
 
  make decaf_tables
 
+Doxygen generated documentation is located in ./doc directory in the
+binary tree after running
+
+ make doc
+
 ## Licensing
 
 Most of the source files here are by Mike Hamburg.  Those files are (c)

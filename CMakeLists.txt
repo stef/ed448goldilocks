@@ -92,6 +92,18 @@ install(FILES
 	DESTINATION ${ConfigPackageLocation}
 )
 
+# Doxygen
+find_package(Doxygen)
+if (DOXYGEN_FOUND)
+	configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
+	add_custom_target(doc
+		${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
+		WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS generatedCode
+		COMMENT "Generating API documentation with Doxygen" VERBATIM
+)
+endif()
+
 # CPack settings
 set(CPACK_PACKAGE_NAME "decaf")
 set(CPACK_PACKAGE_VERSION ${PROJECT_VERSION})
