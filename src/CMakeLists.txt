@@ -42,11 +42,21 @@ elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arch64") # shall be arm64 bits, stick 
 	set(TARGET_ARCH_DIR arch_ref64)
 	set(TARGET_ARCH_DIR_P25519 arch_ref64)
 	set(TARGET_ARCH_DIR_P448 arch_ref64)
-elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm") # is an arm 32 bits, TODO: detect neon features?
-	message("Target architecture is arm32 no NEON")
-	set(TARGET_ARCH_DIR arch_arm_32)
-	set(TARGET_ARCH_DIR_P25519 arch_32) # nothing specific for arm32 on p25519
-	set(TARGET_ARCH_DIR_P448 arch_arm_32)
+elseif(${CMAKE_SYSTEM_PROCESSOR} MATCHES "arm") # is an arm 32 bits
+	if (NOT ${CMAKE_ANDROID_ARCH_ABI} STREQUAL "armeabi") # arm <= 5.0 does not support instructions from the lib, keep arch_32
+		if(${ANDROID_ARM_NEON})
+			message("Target architecture is arm32 NEON")
+			set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -mfpu=neon") # build with neon flag
+			set(TARGET_ARCH_DIR arch_neon)
+			set(TARGET_ARCH_DIR_P25519 arch_32) # nothing specific for neon on p25519
+			set(TARGET_ARCH_DIR_P448 arch_neon)
+		else(${ANDROID_ARM_NEON})
+			message("Target architecture is arm32 no NEON")
+			set(TARGET_ARCH_DIR arch_arm_32)
+			set(TARGET_ARCH_DIR_P25519 arch_32) # nothing specific for arch_arm on p25519
+			set(TARGET_ARCH_DIR_P448 arch_arm_32)
+		endif(${ANDROID_ARM_NEON})
+	endif (NOT ${CMAKE_ANDROID_ARCH_ABI} STREQUAL "armeabi")
 else() # nothing picked yet, stick to the
 	message("Target architecture is general purpose 32bits")
 endif()
