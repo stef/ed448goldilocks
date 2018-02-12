@@ -15,7 +15,6 @@
 #include <decaf/spongerng.hxx>
 #include <decaf/eddsa.hxx>
 #include <stdio.h>
-#include <sys/time.h>
 #include <assert.h>
 #include <stdint.h>
 #include <vector>
@@ -23,13 +22,31 @@
 
 using namespace decaf;
 
+#if defined _MSC_VER  // Turn off attribute code and rename inline
+#define __attribute__(x)        // Turn off attribute code
+#define __attribute(x)
+#define __inline__ __inline  // Use MSVC inline
+#endif // MSVC
 
 static __inline__ void __attribute__((unused)) ignore_result ( int result ) { (void)result; }
+#if defined _MSC_VER  // MSVC does not have gettimeoftheday
+#include <chrono>
+static double now(void) {
+  static const auto beg = std::chrono::high_resolution_clock::now();
+  auto end_time = std::chrono::high_resolution_clock::now();
+  auto time = end_time - beg;
+  double duration = 0.000001 * std::chrono::duration_cast<std::chrono::microseconds>(time).count();
+  return duration;
+}
+#else
+#include <sys/time.h>
 static double now(void) {
   struct timeval tv;
   gettimeofday(&tv, NULL);
   return tv.tv_sec + tv.tv_usec/1000000.0;
 }
+#endif
+
 
 // RDTSC from the chacha code
 #ifndef __has_builtin

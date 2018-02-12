@@ -19,6 +19,10 @@
 #include <cstddef>
 #include <limits>
 
+#if defined(_MSC_VER)  // MSVC does not have built in posix_memalign
+#define posix_memalign(p, a, s) (((*(p)) = _aligned_malloc((s), (a))), *(p) ?0 :errno)
+#endif
+
 /** @cond internal */
 #if __cplusplus >= 201103L
 #define DECAF_NOEXCEPT noexcept

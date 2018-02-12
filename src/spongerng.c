@@ -22,7 +22,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include <unistd.h>
+#if defined(_MSC_VER)
+#   include <io.h>
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#else
+#   include <unistd.h>
+#endif
 
 /** Get entropy from a CPU, preferably in the form of RDRAND, but possibly instead from RDTSC. */
 static void get_cpu_entropy(uint8_t *entropy, size_t len) {
