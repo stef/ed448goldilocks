@@ -5,13 +5,21 @@
 #ifndef __WORD_H__
 #define __WORD_H__
 
-/* for posix_memalign */
-#define _XOPEN_SOURCE 600
-#define __STDC_WANT_LIB_EXT1__ 1 /* for memset_s */
-#include <string.h>
-#if defined(__sun) && defined(__SVR4)
-extern int posix_memalign(void **, size_t, size_t);
-#endif
+#if defined __MINGW64__ || defined __MINGW32__
+  #include <stdlib.h>
+  #include <intrin.h>
+  #include <malloc.h>
+  #include <winsock2.h>
+  #include <windows.h>
+#else
+  /* for posix_memalign */
+  #define _XOPEN_SOURCE 600
+  #define __STDC_WANT_LIB_EXT1__ 1 /* for memset_s */
+  #include <string.h>
+  #if defined(__sun) && defined(__SVR4)
+  extern int posix_memalign(void **, size_t, size_t);
+  #endif
+#endif // defined __MINGW*__
 
 #include <assert.h>
 #include <stdint.h>
@@ -224,6 +232,9 @@ typedef struct {
  */
 static DECAF_INLINE void *
 malloc_vector(size_t size) {
+#if defined __MINGW64__ || defined __MINGW32__
+    return _aligned_malloc(sizeof(big_register_t), size);
+#else
     void *out = NULL;
     
     int ret = posix_memalign(&out, sizeof(big_register_t), size);
@@ -233,6 +244,7 @@ malloc_vector(size_t size) {
     } else {
         return out;
     }
+#endif
 }
 
 /* PERF: vectorize vs unroll */

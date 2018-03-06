@@ -92,7 +92,11 @@ int main(int argc, char **argv) {
     output = (const gf_s *)pre;
     printf("const gf API_NS(precomputed_base_as_fe)[%d]\n", 
         (int)(API_NS(sizeof_precomputed_s) / sizeof(gf)));
+#ifndef TARGET_MINGW
     printf("VECTOR_ALIGNED __attribute__((visibility(\"hidden\"))) = {\n  ");
+#else
+    printf("VECTOR_ALIGNED = {\n  ");
+#endif
     
     for (i=0; i < API_NS(sizeof_precomputed_s); i+=sizeof(gf)) {
         if (i) printf(",\n  ");
@@ -103,7 +107,11 @@ int main(int argc, char **argv) {
     output = (const gf_s *)pre_wnaf;
     printf("const gf API_NS(precomputed_wnaf_as_fe)[%d]\n", 
         (int)(API_NS(sizeof_precomputed_wnafs) / sizeof(gf)));
+#ifndef TARGET_MINGW
     printf("VECTOR_ALIGNED __attribute__((visibility(\"hidden\"))) = {\n  ");
+#else
+    printf("VECTOR_ALIGNED = {\n  ");
+#endif
     for (i=0; i < API_NS(sizeof_precomputed_wnafs); i+=sizeof(gf)) {
         if (i) printf(",\n  ");
         field_print(output++);

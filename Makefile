@@ -70,7 +70,7 @@ SAGE ?= sage
 SAGES= $(shell ls test/*.sage)
 BUILDPYS= $(SAGES:test/%.sage=$(BUILD_PY)/%.py)
 
-.PHONY: clean all test test_ct bench todo doc lib bat sage sagetest gen_code gen_code_static
+.PHONY: clean all test test_ct bench todo doc lib bat sage sagetest gen_code gen_code_static clean_lib
 .PRECIOUS: $(BUILD_C)/*/%.c $(BUILD_H)/*/%.h  $(BUILD_H)/%.h  $(BUILD_H)/%.hxx $(BUILD_H)/*/%.hxx $(BUILD_IBIN)/%
 
 HEADER_SRCS= $(shell find src/public_include -name "*.h*")
@@ -251,6 +251,27 @@ $(eval $(call define_curve,ed448goldilocks,p448,448))
 # The shakesum utility is in the public bin directory.
 $(BUILD_BIN)/shakesum: $(BUILD_OBJ)/shakesum.o $(BUILD_OBJ)/shake.o $(BUILD_OBJ)/sha512.o $(BUILD_OBJ)/utils.o
 	$(LD) $(LDFLAGS) -o $@ $^
+
+
+clean_lib:
+	rm -rf $(LIBCOMPONENTS)
+
+win: CFLAGS += -DTARGET_MINGW
+win: $(LIBCOMPONENTS) clean_lib
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_curve25519
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_ed448goldilocks
+	make dll
+
+dll: CC = x86_64-w64-mingw32-gcc
+dll: CXX = x86_64-w64-mingw32-g++
+dll: LD = x86_64-w64-mingw32-ld
+dll: CFLAGS += -DTARGET_MINGW -DNDEBUG
+dll: $(BUILD_LIB)/libdecaf.dll
+
+$(BUILD_LIB)/libdecaf.dll: $(LIBCOMPONENTS)
+	# libsphinx does not need the lib
+	#$(LD) $(LDFLAGS) -shared -soname=`basename $@` --gc-sections -o $@ $(LIBCOMPONENTS)
+	#strip --discard-all $@
 
 # The main decaf library, and its symlinks.
 lib: $(BUILD_LIB)/libdecaf.so
