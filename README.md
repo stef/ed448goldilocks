@@ -109,3 +109,10 @@ code.  This code might well have security-critical bugs despite my best efforts.
 I've attempted to protect against timing attacks and invalid point attacks,
 but as of yet I've made no attempt to protect against power analysis.
 
+## Cross-compiling with mingw
+
+Due to some alignment errors we cannot use `-O2`, and due to cross-compiling we
+need to make sure ARCHFLAGS is unset. Try `OFLAGS='' ARCHFLAGS='' make win`.
+
+The final library is not built - but for my use-case (statically linking the .o
+files into my lib) that is not necessary - fixes welcome.
