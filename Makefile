@@ -29,6 +29,7 @@ endif
 LD = $(CC)
 LDXX = $(CXX)
 ASM ?= $(CC)
+STRIP ?= strip
 
 PYTHON ?= python
 
@@ -49,6 +50,7 @@ endif
 
 TODAY = $(shell date "+%Y-%m-%d")
 
+FIELD_ARCH ?= arch_x86_64
 ARCHFLAGS ?= -march=native
 
 ifeq ($(CC),clang)
@@ -243,15 +245,14 @@ endef
 
 ################################################################
 # call code above to generate curves and fields
-$(eval $(call define_field,p25519,arch_x86_64))
+$(eval $(call define_field,p25519,$(FIELD_ARCH)))
 $(eval $(call define_curve,curve25519,p25519,255))
-$(eval $(call define_field,p448,arch_x86_64))
+$(eval $(call define_field,p448,$(FIELD_ARCH)))
 $(eval $(call define_curve,ed448goldilocks,p448,448))
 
 # The shakesum utility is in the public bin directory.
 $(BUILD_BIN)/shakesum: $(BUILD_OBJ)/shakesum.o $(BUILD_OBJ)/shake.o $(BUILD_OBJ)/sha512.o $(BUILD_OBJ)/utils.o
 	$(LD) $(LDFLAGS) -o $@ $^
-
 
 clean_lib:
 	rm -rf $(LIBCOMPONENTS)
@@ -286,10 +287,10 @@ ifeq ($(UNAME),Darwin)
 		  $(LIBCOMPONENTS)
 else ifeq ($(UNAME),SunOS)
 	$(LD) $(LDFLAGS) -shared -Wl,-soname,`basename $@` -o $@ $(LIBCOMPONENTS)
-	strip --discard-all $@
+	$(STRIP) --discard-all $@
 else
 	$(LD) $(LDFLAGS) -shared -Wl,-soname,`basename $@` -Wl,--gc-sections -o $@ $(LIBCOMPONENTS)
-	strip --discard-all $@
+	$(STRIP) --discard-all $@
 endif
 
 
