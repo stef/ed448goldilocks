@@ -33,7 +33,8 @@
 #		error byte order not supported
 #	endif
 #else
-#	error platform not supported
+#include "machine/endian.h"
+//#	error platform not supported
 #endif
 
 #endif // __PORTABLE_ENDIAN_H__

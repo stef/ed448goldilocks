@@ -29,7 +29,7 @@ endif
 LD = $(CC)
 LDXX = $(CXX)
 ASM ?= $(CC)
-STRIP ?= strip
+STRIP ?= arm-none-eabi-strip
 
 PYTHON ?= python
 
@@ -40,7 +40,7 @@ INCFLAGS = -Isrc/include -I$(BUILD_INC) -I$(BUILD_H)
 PUB_INCFLAGS = -I$(BUILD_INC)
 LANGFLAGS = -std=c99 -fno-strict-aliasing
 LANGXXFLAGS = -fno-strict-aliasing
-GENFLAGS = -ffunction-sections -fdata-sections -fvisibility=hidden -fomit-frame-pointer -fPIC
+GENFLAGS = -ffunction-sections -fdata-sections -fvisibility=hidden -fomit-frame-pointer #-fPIC
 OFLAGS ?= -O2
 
 MACOSX_VERSION_MIN ?= 10.9
@@ -84,7 +84,7 @@ GEN_CODE= $(GEN_CODE_1:%.tmpl.hxx=%.hxx)
 HEADERS= Makefile $(shell find src test -name "*.h") $(BUILD_OBJ)/timestamp $(GEN_CODE)
 
 # components needed by the lib
-LIBCOMPONENTS = $(BUILD_OBJ)/utils.o $(BUILD_OBJ)/shake.o $(BUILD_OBJ)/sha512.o $(BUILD_OBJ)/spongerng.o
+LIBCOMPONENTS = $(BUILD_OBJ)/utils.o # $(BUILD_OBJ)/shake.o $(BUILD_OBJ)/sha512.o $(BUILD_OBJ)/spongerng.o
 # and per-field components
 
 BENCHCOMPONENTS = $(BUILD_OBJ)/bench.o $(BUILD_OBJ)/shake.o
@@ -256,6 +256,41 @@ $(BUILD_BIN)/shakesum: $(BUILD_OBJ)/shakesum.o $(BUILD_OBJ)/shake.o $(BUILD_OBJ)
 
 clean_lib:
 	rm -rf $(LIBCOMPONENTS)
+
+arm: CFLAGS += -DTARGET_MINGW
+arm: $(LIBCOMPONENTS) clean_lib
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_curve25519
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_ed448goldilocks
+	make dota
+
+dota: CC=arm-none-eabi-gcc
+dota: CXX=arm-none-eabi-g++
+dota: LD =arm-none-eabi-ld
+dota: CFLAGS  = $(LANGFLAGS) $(WARNFLAGS) $(WARNFLAGS_C) $(INCFLAGS) $(OFLAGS) $(GENFLAGS) $(XCFLAGS)
+dota: CXXFLAGS = $(LANGXXFLAGS) $(WARNFLAGS) $(WARNFLAGS_CXX) $(INCFLAGS) $(OFLAGS) $(GENFLAGS) $(XCXXFLAGS)
+dota: CFLAGS+=-DNDEBUG -mthumb -mcpu=cortex-m3 -mno-unaligned-access -mfix-cortex-m3-ldrd -msoft-float -fdata-sections -ffunction-sections -nostdlib -nostartfiles -ffreestanding
+
+dota: $(BUILD_LIB)/libdecaf.a
+
+$(BUILD_LIB)/libdecaf.a: $(LIBCOMPONENTS)
+	arm-none-eabi-ar rcs libdecaf.a \
+		build/obj/utils.o \
+		build/obj/p25519/f_impl.o \
+		build/obj/p25519/f_arithmetic.o \
+		build/obj/p25519/f_generic.o \
+		build/obj/curve25519/decaf.o \
+		build/obj/curve25519/elligator.o \
+		build/obj/curve25519/scalar.o \
+		build/obj/curve25519/eddsa.o \
+		build/obj/curve25519/decaf_tables.o \
+		build/obj/p448/f_impl.o \
+		build/obj/p448/f_arithmetic.o \
+		build/obj/p448/f_generic.o \
+		build/obj/ed448goldilocks/decaf.o \
+		build/obj/ed448goldilocks/elligator.o \
+		build/obj/ed448goldilocks/scalar.o \
+		build/obj/ed448goldilocks/eddsa.o \
+		build/obj/ed448goldilocks/decaf_tables.o
 
 win: CFLAGS += -DTARGET_MINGW
 win: $(LIBCOMPONENTS) clean_lib
