@@ -28,17 +28,17 @@ typedef struct decaf_sha512_ctx_s {
 } decaf_sha512_ctx_s, decaf_sha512_ctx_t[1];
 
 /** Initialize a SHA-512 context. */
-void decaf_sha512_init(decaf_sha512_ctx_t ctx) DECAF_NONNULL DECAF_API_VIS;
+void DECAF_API_VIS decaf_sha512_init(decaf_sha512_ctx_t ctx) DECAF_NONNULL;
 
 /** Update context by hashing part of a message. */
-void decaf_sha512_update(decaf_sha512_ctx_t ctx, const uint8_t *message, size_t message_len) DECAF_NONNULL DECAF_API_VIS;
+void DECAF_API_VIS decaf_sha512_update(decaf_sha512_ctx_t ctx, const uint8_t *message, size_t message_len) DECAF_NONNULL;
 
 /** Finalize context and write out hash.
  * @param [inout] ctx The context.  Will be destroyed and re-initialized on return.
  * @param [out] output Place to store the output hash.
  * @param [in] output_len Length in bytes of the output hash.  Must between 0 and 64, inclusive.
  */
-void decaf_sha512_final(decaf_sha512_ctx_t ctx, uint8_t *output, size_t output_len) DECAF_NONNULL DECAF_API_VIS;
+void DECAF_API_VIS decaf_sha512_final(decaf_sha512_ctx_t ctx, uint8_t *output, size_t output_len) DECAF_NONNULL;
 
 /** Securely destroy a SHA512 context. */
 static inline void decaf_sha512_destroy(decaf_sha512_ctx_t ctx) {

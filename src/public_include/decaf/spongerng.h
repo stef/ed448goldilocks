@@ -27,12 +27,12 @@ typedef struct {
 typedef decaf_keccak_prng_s decaf_keccak_prng_t[1];
     
 /** Initialize a sponge-based CSPRNG from a buffer. */
-void decaf_spongerng_init_from_buffer (
+void DECAF_API_VIS decaf_spongerng_init_from_buffer (
     decaf_keccak_prng_t prng,             /**< [out] The PRNG object. */
     const uint8_t *__restrict__ in, /**< [in]  The initialization data. */
     size_t len,                     /**< [in]  The length of the initialization data. */
     int deterministic               /**< [in]  If zero, allow RNG to stir in nondeterministic data from RDRAND or RDTSC.*/
-) DECAF_NONNULL DECAF_API_VIS;
+) DECAF_NONNULL;
     
 /**
  * @brief Initialize a sponge-based CSPRNG from a file.
@@ -40,12 +40,12 @@ void decaf_spongerng_init_from_buffer (
  * @retval DECAF_FAILURE failure.
  * @note On failure, errno can be used to determine the cause.
  */
-decaf_error_t decaf_spongerng_init_from_file (
+decaf_error_t DECAF_API_VIS decaf_spongerng_init_from_file (
     decaf_keccak_prng_t prng, /**< [out] The PRNG object. */
     const char *file,   /**< [in]  A name of a file containing initial data. */
     size_t len,         /**< [in]  The length of the initial data.  Must be positive. */
     int deterministic   /**< [in]  If zero, allow RNG to stir in nondeterministic data from RDRAND or RDTSC. */
-) DECAF_NONNULL DECAF_API_VIS DECAF_WARN_UNUSED;
+) DECAF_NONNULL DECAF_WARN_UNUSED;
 
 /**
  * @brief Initialize a nondeterministic sponge-based CSPRNG from /dev/urandom.
@@ -53,23 +53,23 @@ decaf_error_t decaf_spongerng_init_from_file (
  * @retval DECAF_FAILURE failure.
  * @note On failure, errno can be used to determine the cause.
  */
-decaf_error_t decaf_spongerng_init_from_dev_urandom (
+decaf_error_t DECAF_API_VIS decaf_spongerng_init_from_dev_urandom (
     decaf_keccak_prng_t prng /**< [out] sponge The sponge object. */
-) DECAF_API_VIS DECAF_WARN_UNUSED;
+) DECAF_WARN_UNUSED;
 
 /** Output bytes from a sponge-based CSPRNG. */
-void decaf_spongerng_next (
+void DECAF_API_VIS decaf_spongerng_next (
     decaf_keccak_prng_t prng,         /**< [inout] The PRNG object. */
     uint8_t * __restrict__ out, /**< [out]   Output buffer. */
     size_t len                  /**< [in]    Number of bytes to output. */
-) DECAF_API_VIS;
+);
 
 /** Stir entropy data into a sponge-based CSPRNG from a buffer.  */
-void decaf_spongerng_stir (
+void DECAF_API_VIS decaf_spongerng_stir (
     decaf_keccak_prng_t prng,              /**< [out] The PRNG object. */
     const uint8_t * __restrict__ in, /**< [in]  The entropy data. */
     size_t len                       /**< [in]  The length of the initial data. */
-) DECAF_NONNULL DECAF_API_VIS;
+) DECAF_NONNULL;
     
 /** Securely destroy a sponge RNG object by overwriting it. */
 static DECAF_INLINE void

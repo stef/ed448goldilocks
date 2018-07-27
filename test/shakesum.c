@@ -9,7 +9,13 @@
  */
 
 #include <stdio.h>
+#if defined _MSC_VER  // MSVC has not unistd.h
+#include <io.h>
+#include <BaseTsd.h>
+typedef SSIZE_T ssize_t;
+#else
 #include <unistd.h>
+#endif
 #include <string.h>
 #include <decaf/shake.h>
 #include <decaf/sha512.h>

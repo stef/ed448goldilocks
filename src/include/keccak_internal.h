@@ -12,6 +12,13 @@
 
 #include <stdint.h>
 
+/* Aliasing MSVC preprocessing to GNU preprocessing */
+#if defined _MSC_VER
+#define __attribute__(x)        // Turn off attribute code
+#define __attribute(x)
+#define __restrict__ __restrict  // Use MSVC restrict code
+#endif // MSVC
+
 /* The internal, non-opaque definition of the decaf_sponge struct. */
 typedef union {
     uint64_t w[25]; uint8_t b[25*8];

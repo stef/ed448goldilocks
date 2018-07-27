@@ -191,7 +191,7 @@ static void test_arithmetic() {
             printf("  Inverted zero!");
             print("x", x);
             print("y", y);
-        } catch(CryptoException) {}
+        } catch(CryptoException&) {}
     }
 }
 
@@ -522,6 +522,18 @@ static void test_cfrg_vectors() {
             for (unsigned i=0; i<sig.size(); i++) printf("%02x", sig[i]);
             printf("\n");
         }
+        
+        try {
+            typename EdDSA<Group>::PublicKey pub(eddsa_pk[t]);
+            if (eddsa_prehashed[t]) {
+                pub.verify_with_prehash(eddsa_sig[t], eddsa_message[t], eddsa_context[t]);
+            } else {
+                priv.pub().verify(eddsa_sig[t], eddsa_message[t], eddsa_context[t]);
+            }
+        } catch(CryptoException&) {
+            test.fail();
+            printf("    EdDSA Verify vector #%d disagree\n", t);
+        }
     }
     
     /* X25519/X448 */
@@ -565,7 +577,7 @@ static void test_eddsa() {
         
         try {
             pub.verify(sig,message,context); 
-        } catch(CryptoException) {
+        } catch(CryptoException&) {
             test.fail();
             printf("    Signature validation failed on sig %d\n", i);
         }

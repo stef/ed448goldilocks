@@ -173,6 +173,17 @@ public:
     }
 };
 
+
+#if defined _MSC_VER // MSVC does not want tempalte<> syntax, gcc cannot live without it
+/** @cond internal */
+inline const struct decaf_kparams_s *SHAKE<128>::get_params() { return &DECAF_SHAKE128_params_s; }
+inline const struct decaf_kparams_s *SHAKE<256>::get_params() { return &DECAF_SHAKE256_params_s; }
+inline const struct decaf_kparams_s *SHA3<224>::get_params() { return  &DECAF_SHA3_224_params_s; }
+inline const struct decaf_kparams_s *SHA3<256>::get_params() { return  &DECAF_SHA3_256_params_s; }
+inline const struct decaf_kparams_s *SHA3<384>::get_params() { return  &DECAF_SHA3_384_params_s; }
+inline const struct decaf_kparams_s *SHA3<512>::get_params() { return  &DECAF_SHA3_512_params_s; }
+/** @endcond */
+#else
 /** @cond internal */
 template<> inline const struct decaf_kparams_s *SHAKE<128>::get_params() { return &DECAF_SHAKE128_params_s; }
 template<> inline const struct decaf_kparams_s *SHAKE<256>::get_params() { return &DECAF_SHAKE256_params_s; }
@@ -181,6 +192,8 @@ template<> inline const struct decaf_kparams_s *SHA3<256>::get_params() { return
 template<> inline const struct decaf_kparams_s *SHA3<384>::get_params() { return  &DECAF_SHA3_384_params_s; }
 template<> inline const struct decaf_kparams_s *SHA3<512>::get_params() { return  &DECAF_SHA3_512_params_s; }
 /** @endcond */
+#endif
+
   
 } /* namespace decaf */
 
