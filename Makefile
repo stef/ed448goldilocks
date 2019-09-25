@@ -263,11 +263,61 @@ win: $(LIBCOMPONENTS) clean_lib
 	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_ed448goldilocks
 	make dll
 
+android_x86_64: $(LIBCOMPONENTS) clean_lib
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_curve25519
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_ed448goldilocks
+	make android_x86_64_so
+
+android_i686: $(LIBCOMPONENTS) clean_lib
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_curve25519
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_ed448goldilocks
+	make android_i686_so
+
+android_aarch64: $(LIBCOMPONENTS) clean_lib
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_curve25519
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_ed448goldilocks
+	make android_aarch64_so
+
+android_armv7a: $(LIBCOMPONENTS) clean_lib
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_curve25519
+	touch -d "+1 minute" build/obj/bin/decaf_gen_tables_ed448goldilocks
+	make android_armv7a_so
+
 dll: CC = x86_64-w64-mingw32-gcc
 dll: CXX = x86_64-w64-mingw32-g++
 dll: LD = x86_64-w64-mingw32-ld
 dll: CFLAGS += -DTARGET_MINGW -DNDEBUG
 dll: $(BUILD_LIB)/libdecaf.dll
+
+android_x86_64_so: CC = x86_64-linux-android21-clang
+android_x86_64_so: CXX = x86_64-linux-android21-clang++
+android_x86_64_so: LD = x86_64-linux-android21-clang
+android_x86_64_so: ARCHFLAGS =
+android_x86_64_so: CFLAGS += -DNDEBUG
+android_x86_64_so: $(BUILD_LIB)/libdecaf.so
+
+android_i686_so: CC = i686-linux-android21-clang
+android_i686_so: CXX = i686-linux-android21-clang++
+android_i686_so: LD = i686-linux-android21-clang
+android_i686_so: ARCHFLAGS =
+android_i686_so: CFLAGS += -DNDEBUG
+android_i686_so: $(BUILD_LIB)/libdecaf.so
+
+android_aarch64_so: CC = aarch64-linux-android21-clang
+android_aarch64_so: CXX = aarch64-linux-android21-clang++
+android_aarch64_so: LD = aarch64-linux-android21-clang
+android_aarch64_so: STRIP = aarch64-linux-android-strip
+android_aarch64_so: ARCHFLAGS =
+android_aarch64_so: CFLAGS += -DNDEBUG
+android_aarch64_so: $(BUILD_LIB)/libdecaf.so
+
+android_armv7a_so: CC = armv7a-linux-androideabi21-clang
+android_armv7a_so: CXX = armv7a-linux-androideabi21-clang++
+android_armv7a_so: LD = armv7a-linux-androideabi21-clang
+android_armv7a_so: STRIP = arm-linux-androideabi-strip
+android_armv7a_so: ARCHFLAGS =
+android_armv7a_so: CFLAGS += -DNDEBUG
+android_armv7a_so: $(BUILD_LIB)/libdecaf.so
 
 $(BUILD_LIB)/libdecaf.dll: $(LIBCOMPONENTS)
 	# libsphinx does not need the lib
